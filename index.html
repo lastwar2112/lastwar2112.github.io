@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server 2112 Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0d11;
+    --surface: #15171d;
+    --surface-hi: #1c1f27;
+    --line: #262a35;
+    --text: #e8e9ed;
+    --muted: #8b8f9c;
+    --faint: #585c68;
+    --amber: #ffc94a;
+    --sky: #5fb6 f3;
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  h1, h2, .display { font-family: 'Space Grotesk', sans-serif; }
+
+  /* layered atmospheric background */
+  .bg-mesh {
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(60rem 40rem at 12% -10%, rgba(95,160,243,.12), transparent 60%),
+      radial-gradient(50rem 40rem at 95% 8%, rgba(255,201,74,.08), transparent 55%),
+      radial-gradient(40rem 40rem at 50% 110%, rgba(95,160,243,.07), transparent 60%);
+  }
+  .bg-grain {
+    position: fixed; inset: 0; z-index: -1; opacity: .035; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* staggered page-load reveal */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; animation: rise .7s cubic-bezier(.2,.7,.2,1) forwards; }
+  .d1 { animation-delay: .05s; } .d2 { animation-delay: .15s; }
+  .d3 { animation-delay: .25s; } .d4 { animation-delay: .35s; }
+  .d5 { animation-delay: .45s; }
+
+  .rule-card {
+    position: relative; overflow: hidden;
+    background: linear-gradient(180deg, var(--surface-hi), var(--surface));
+    border: 1px solid var(--line);
+    transition: transform .25s ease, border-color .25s ease;
+  }
+  .rule-card:hover { transform: translateY(-3px); border-color: #36506b; }
+  .rule-card::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent, var(--sky));
+  }
+
+  .star-cell { transition: background .2s ease, transform .2s ease; }
+  .star-cell.on { animation: pop .5s cubic-bezier(.2,1.4,.4,1) backwards; }
+  @keyframes pop { from { transform: scale(.4); opacity: 0; } }
+
+  /* scrollbar for the table on small screens */
+  .scroll-x::-webkit-scrollbar { height: 6px; }
+  .scroll-x::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+</style>
+</head>
+<body class="min-h-screen antialiased">
+<div class="bg-mesh"></div>
+<div class="bg-grain"></div>
+
+<div class="max-w-3xl mx-auto px-5 sm:px-8 py-10 sm:py-16">
+
+  <!-- Header -->
+  <header class="reveal d1">
+    <div class="flex items-center gap-2.5 mb-5">
+      <span class="h-1.5 w-1.5 rounded-full bg-[#5fb0f3]"></span>
+      <span class="text-[11px] font-medium tracking-[.2em] uppercase text-[#8b8f9c]">
+        Last War: Survival
+      </span>
+    </div>
+    <h1 class="text-3xl sm:text-5xl font-bold tracking-tight leading-[1.05]">
+      Server 2112
+      <span class="block text-[#5fb0f3]">Hub</span>
+    </h1>
+    <p class="text-sm sm:text-base text-[#8b8f9c] mt-4 max-w-xl leading-relaxed">
+      Welcome, brave warriors of 2112! This hub unites our server guidelines in one place. Forged to keep our battlefield fair, our alliance active, and our journey enjoyable for every fighter!
+    </p>
+  </header>
+
+  <!-- Rules -->
+  <section class="mt-12 sm:mt-16">
+    <div class="reveal d2 flex items-baseline justify-between gap-4 mb-5">
+      <h2 class="text-lg sm:text-xl font-semibold">Server Rules</h2>
+      <span class="text-[11px] tracking-widest uppercase text-[#585c68]">guidelines</span>
+    </div>
+
+    <div class="grid gap-3.5">
+      <article class="rule-card reveal d3 rounded-2xl p-5 sm:p-6" style="--accent:#ff6b6b">
+        <div class="flex items-start gap-3">
+          <span class="display text-xs font-bold text-[#ff6b6b] mt-0.5 shrink-0">01</span>
+          <div>
+            <h3 class="font-semibold text-[15px] sm:text-base">No plundering trucks or Secret Tasks</h3>
+            <p class="text-sm text-[#8b8f9c] mt-1.5 leading-relaxed">
+              Please refrain from plundering other members' trucks or Secret Tasks.
+              Violations will result in a
+              <span class="text-[#ff8a8a] font-semibold">3-hit penalty</span>.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="rule-card reveal d4 rounded-2xl p-5 sm:p-6" style="--accent:#ffc94a">
+        <div class="flex items-start gap-3">
+          <span class="display text-xs font-bold text-[#ffc94a] mt-0.5 shrink-0">02</span>
+          <div>
+            <h3 class="font-semibold text-[15px] sm:text-base">Top 20 Total Hero Power Capitol Buff</h3>
+            <p class="text-sm text-[#8b8f9c] mt-1.5 leading-relaxed">
+              Members ranked in the
+              <span class="text-[#ffc94a] font-semibold">Top 20 by Total Hero Power</span>
+              will receive a buff priority. We encourage everyone to keep growing their heroes.
+            </p>
+          </div>
+        </div>
+      </article>
+
+      <article class="rule-card reveal d5 rounded-2xl p-5 sm:p-6" style="--accent:#5fb0f3">
+        <div class="flex items-start gap-3">
+          <span class="display text-xs font-bold text-[#5fb0f3] mt-0.5 shrink-0">03</span>
+          <div>
+            <h3 class="font-semibold text-[15px] sm:text-base">City Contest scheduling</h3>
+            <p class="text-sm text-[#8b8f9c] mt-1.5 leading-relaxed">
+              City Contest can only be held on
+              <span class="text-[#5fb0f3] font-semibold">Wednesdays</span>.
+              If a contest is planned, please announce it at least
+              <span class="text-[#5fb0f3] font-semibold">24 hours in advance</span>.
+              Last-minute notices are not permitted, so that everyone has a fair
+              chance to prepare.
+            </p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- Star Schedule -->
+  <section class="mt-12 sm:mt-16 reveal d5">
+    <div class="flex items-baseline justify-between gap-4 mb-2">
+      <h2 class="text-lg sm:text-xl font-semibold">Shiny Task Schedule</h2>
+      <span class="text-[11px] tracking-widest uppercase text-[#585c68]">5-day window</span>
+    </div>
+    <p class="text-sm text-[#8b8f9c] mb-5 leading-relaxed">
+      A star marks each server's active day.
+    </p>
+
+    <div class="scroll-x overflow-x-auto rounded-2xl border border-[#262a35] bg-[#15171d]">
+      <table id="tbl" class="w-full text-sm border-collapse min-w-[460px]"></table>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="mt-14 sm:mt-20 pt-6 border-t border-[#262a35] reveal d5">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5">
+      <p class="display text-sm font-medium text-[#e8e9ed]">
+        Server 2112 <span class="text-[#585c68]">Hub</span>
+      </p>
+    </div>
+    <p class="text-xs text-[#585c68] mt-3 leading-relaxed max-w-xl">
+      Maintained by alliance leadership for informational purposes. Rules may be
+      adjusted with prior notice, for questions, please reach out in the alliance chat.
+    </p>
+    <p class="text-xs text-[#454956] mt-3">
+      © <span id="year"></span> Server 2112 Alliance · Not affiliated with the game's developer.
+    </p>
+  </footer>
+
+</div>
+
+<script>
+// === single data parameter ===
+const data = {
+  "2105": "2026-05-22", "2106": "2026-05-22", "2115": "2026-05-22", "2116": "2026-05-22",
+  "2102": "2026-05-21", "2103": "2026-05-21", "2104": "2026-05-21", "2111": "2026-05-21",
+  "2113": "2026-05-21", "2114": "2026-05-21",
+  "2107": "2026-05-20", "2118": "2026-05-20", "2109": "2026-05-20", "2110": "2026-05-20"
+};
+
+const CYCLE_DAYS = 3;
+const TZ_OFFSET = 9;
+const COLUMNS = [-1, 0, 1, 2, 3];
+
+const CLS = {
+  th:       "px-3 py-3 text-center font-semibold text-[11px] uppercase tracking-wider text-[#8b8f9c] border-b border-[#262a35]",
+  thToday:  "px-3 py-3 text-center font-semibold text-[11px] uppercase tracking-wider text-[#bfe0ff] bg-[#16314a] border-b border-[#2b4a67]",
+  sub:      "block text-[10px] font-normal tracking-normal mt-0.5 text-[#585c68]",
+  subToday: "block text-[10px] font-normal tracking-normal mt-0.5 text-[#7fb6e0]",
+  tdServer: "px-3 py-3 text-center font-semibold display text-[#e8e9ed] bg-[#1c1f27] border-b border-[#262a35]",
+  td:       "star-cell px-3 py-3 text-center text-[#454956] border-b border-[#262a35]",
+  tdToday:  "bg-[#13202c]",
+  tdStar:   "on bg-[#2a2410] text-[#ffc94a] font-bold",
+  tdTodayStar: "on bg-[#26301c] text-[#ffc94a] font-bold"
+};
+
+function todayInTZ(o) {
+  const s = new Date(Date.now() + o * 3600000);
+  return new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth(), s.getUTCDate()));
+}
+function parseDate(str) {
+  const [y, m, d] = str.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+const dayDiff = (a, b) => Math.round((a - b) / 86400000);
+const fmt = d => d.toLocaleDateString("en-US", { day:"2-digit", month:"short", timeZone:"UTC" });
+const dow = d => d.toLocaleDateString("en-US", { weekday:"short", timeZone:"UTC" });
+
+function render(data) {
+  const today = todayInTZ(TZ_OFFSET);
+  const tbl = document.getElementById("tbl");
+  tbl.innerHTML = "";
+
+  // header
+  const head = document.createElement("tr");
+  let cells = `<th class="${CLS.th} text-left">Server</th>`;
+  COLUMNS.forEach(off => {
+    const cur = new Date(today);
+    cur.setUTCDate(today.getUTCDate() + off);
+    const isToday = off === 0;
+    cells += `<th class="${isToday ? CLS.thToday : CLS.th}">${fmt(cur)}` +
+             `<span class="${isToday ? CLS.subToday : CLS.sub}">${dow(cur)}</span></th>`;
+  });
+  head.innerHTML = cells;
+  tbl.appendChild(head);
+
+  // rows — sorted numerically
+  const servers = Object.keys(data).sort((a, b) => Number(a) - Number(b));
+  servers.forEach((server, ri) => {
+    const anchor = parseDate(data[server]);
+    const tr = document.createElement("tr");
+    let row = `<td class="${CLS.tdServer} text-left">${server}</td>`;
+
+    COLUMNS.forEach((off, ci) => {
+      const cur = new Date(today);
+      cur.setUTCDate(today.getUTCDate() + off);
+      const diff = dayDiff(cur, anchor);
+      const isStar = diff >= 0 && diff % CYCLE_DAYS === 0;
+      const isToday = off === 0;
+
+      let cls = CLS.td;
+      if (isToday && isStar)  cls += " " + CLS.tdTodayStar;
+      else if (isStar)        cls += " " + CLS.tdStar;
+      else if (isToday)       cls += " " + CLS.tdToday;
+
+      const delay = isStar ? ` style="animation-delay:${(ri * 0.04 + ci * 0.03).toFixed(2)}s"` : "";
+      row += `<td class="${cls}"${delay}>${isStar ? "★" : "·"}</td>`;
+    });
+
+    tr.innerHTML = row;
+    tbl.appendChild(tr);
+  });
+}
+
+function renderFooter() {
+  document.getElementById("year").textContent = new Date().getUTCFullYear();
+  document.getElementById("lastUpdated").textContent =
+    new Date().toLocaleString("en-US", {
+      timeZone: "Asia/Tokyo",
+      day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: false
+    }) + " (UTC+9)";
+}
+
+render(data);
+renderFooter();
+</script>
+</body>
+</html>
