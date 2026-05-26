@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,10 +16,7 @@
     --surface-hi: #1c1f27;
     --line: #262a35;
     --text: #e8e9ed;
-    --muted: #8b8f9c;
-    --faint: #585c68;
-    --amber: #ffc94a;
-    --sky: #5fb6 f3;
+    --sky: #5fb0f3;
   }
   * { -webkit-tap-highlight-color: transparent; }
   body {
@@ -70,6 +68,86 @@
   /* scrollbar for the table on small screens */
   .scroll-x::-webkit-scrollbar { height: 6px; }
   .scroll-x::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+
+  /* === VP Guidance — responsive scroll-snap === */
+  .vp-row {
+    display: grid;
+    grid-auto-flow: column;
+    /* on a wide screen, 4 columns fit; on narrow, each card keeps min width and overflows */
+    grid-auto-columns: minmax(180px, 1fr);
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+  .vp-row::-webkit-scrollbar { height: 6px; }
+  .vp-row::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+  /* once all 4 fit comfortably, lock to a 4-up grid with no scroll */
+  @media (min-width: 720px) {
+    .vp-row {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(4, 1fr);
+      overflow-x: visible;
+    }
+  }
+  .vp-cell {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: .9rem;
+    overflow: hidden;
+    background: var(--surface);
+    scroll-snap-align: start;
+  }
+  /* fixed-ratio crop box — every image fills it identically */
+  .vp-cell img {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    cursor: zoom-in;
+    -webkit-user-drag: none;
+  }
+  .vp-cell .vp-caption {
+    padding: .6rem .7rem;
+    font-size: 11px; letter-spacing: .03em;
+    color: var(--text);
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+  }
+  /* === lightbox === */
+  .vp-lightbox {
+    position: fixed; inset: 0; z-index: 50;
+    display: none;
+    align-items: center; justify-content: center;
+    padding: 1.5rem;
+    background: rgba(8,9,12,.92);
+    backdrop-filter: blur(6px);
+    cursor: zoom-out;
+  }
+  .vp-lightbox.open { display: flex; animation: lbfade .2s ease; }
+  @keyframes lbfade { from { opacity: 0; } }
+  .vp-lightbox img {
+    max-width: 100%; max-height: 100%;
+    object-fit: contain;
+    border-radius: .6rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    animation: lbzoom .25s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes lbzoom { from { opacity: 0; transform: scale(.92); } }
+  .vp-lightbox-close {
+    position: fixed; top: 1rem; right: 1rem;
+    height: 2.5rem; width: 2.5rem;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 999px;
+    background: rgba(28,31,39,.9);
+    border: 1px solid var(--line);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .vp-lightbox-close:hover { border-color: #36506b; }
 </style>
 </head>
 <body class="min-h-screen antialiased">
@@ -91,7 +169,7 @@
       <span class="block text-[#5fb0f3]">Hub</span>
     </h1>
     <p class="text-sm sm:text-base text-[#8b8f9c] mt-4 max-w-xl leading-relaxed">
-      Welcome, brave warriors of 2112! This hub unites our server guidelines in one place. Forged to keep our battlefield fair, our alliance active, and our journey enjoyable for every fighter!
+      Welcome brave warriors of 2112! This website unites our server guidelines in one place. Forged to keep our journey enjoyable for every fighter!
     </p>
   </header>
 
@@ -163,6 +241,52 @@
     <div class="scroll-x overflow-x-auto rounded-2xl border border-[#262a35] bg-[#15171d]">
       <table id="tbl" class="w-full text-sm border-collapse min-w-[460px]"></table>
     </div>
+
+    <!-- Today's Shiny — copyable announcement -->
+    <div id="shinyToday" class="mt-4 rounded-2xl border border-[#262a35] bg-[#15171d] p-4 sm:p-5">
+      <div class="flex items-center justify-between gap-3 mb-2.5">
+        <button id="shinyCopyBtn"
+          class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-[#262a35] bg-[#1c1f27] px-3 py-1.5 text-[12px] font-medium text-[#e8e9ed] transition hover:border-[#36506b]">
+          <svg id="shinyCopyIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span id="shinyCopyLabel">Copy</span>
+        </button>
+      </div>
+      <p id="shinyText" class="text-sm text-[#e8e9ed] leading-relaxed"></p>
+    </div>
+  </section>
+
+  <!-- Vice President Guidance -->
+  <section class="mt-12 sm:mt-16 reveal d5">
+    <div class="flex items-baseline justify-between gap-4 mb-2">
+      <h2 class="text-lg sm:text-xl font-semibold">Vice President Guidance</h2>
+      <span class="text-[11px] tracking-widest uppercase text-[#585c68]">buff assignment</span>
+    </div>
+    <p class="text-sm text-[#8b8f9c] mb-5 leading-relaxed">
+      Step-by-step reference for assigning the Top 20 buff priority.
+    </p>
+
+    <div class="vp-row" id="vpRow">
+      <!-- 4 images — replace src with your real screenshots -->
+      <div class="vp-cell">
+        <img src="images/vp-guide-1.png" alt="VP Guidance step 1">
+        <span class="vp-caption">#1: Member requests the buff in chat</span>
+      </div>
+      <div class="vp-cell">
+        <img src="images/vp-guide-2.png" alt="VP Guidance step 2">
+        <span class="vp-caption">#2: Verify Top 20 eligibility, then ask for the requester's coordinates</span>
+      </div>
+      <div class="vp-cell">
+        <img src="images/vp-guide-3.png" alt="VP Guidance step 3">
+        <span class="vp-caption">#3: Open the requester's profile to assign</span>
+      </div>
+      <div class="vp-cell">
+        <img src="images/vp-guide-4.png" alt="VP Guidance step 4">
+        <span class="vp-caption">#4: Pick the matching buff and assign it at 04:50</span>
+      </div>
+    </div>
   </section>
 
   <!-- Footer -->
@@ -173,14 +297,22 @@
       </p>
     </div>
     <p class="text-xs text-[#585c68] mt-3 leading-relaxed max-w-xl">
-      Maintained by alliance leadership for informational purposes. Rules may be
-      adjusted with prior notice, for questions, please reach out in the alliance chat.
+      Maintained by 2112 leadership for informational purposes. Rules may be
+      adjusted with prior notice, for questions, please reach out your alliance leadership.
     </p>
     <p class="text-xs text-[#454956] mt-3">
-      © <span id="year"></span> Server 2112 Alliance · Not affiliated with the game's developer.
+      © <span id="year"></span> Server 2112 · Not affiliated with the game's developer.
     </p>
   </footer>
 
+</div>
+
+<!-- Lightbox -->
+<div class="vp-lightbox" id="vpLightbox">
+  <button class="vp-lightbox-close" id="vpLightboxClose" aria-label="Close">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+  </button>
+  <img id="vpLightboxImg" src="" alt="">
 </div>
 
 <script>
@@ -189,7 +321,7 @@ const data = {
   "2105": "2026-05-22", "2106": "2026-05-22", "2115": "2026-05-22", "2116": "2026-05-22",
   "2102": "2026-05-21", "2103": "2026-05-21", "2104": "2026-05-21", "2111": "2026-05-21",
   "2113": "2026-05-21", "2114": "2026-05-21",
-  "2107": "2026-05-20", "2108": "2026-05-20", "2109": "2026-05-20", "2110": "2026-05-20"
+  "2107": "2026-05-20", "2108": "2026-05-20", "2109": "2026-05-20", "2110": "2026-05-20", "2112": "0000-00-00"
 };
 
 const CYCLE_DAYS = 3;
@@ -205,8 +337,13 @@ const CLS = {
   td:       "star-cell px-3 py-3 text-center text-[#454956] border-b border-[#262a35]",
   tdToday:  "bg-[#13202c]",
   tdStar:   "on bg-[#2a2410] text-[#ffc94a] font-bold",
-  tdTodayStar: "on bg-[#26301c] text-[#ffc94a] font-bold"
+  tdTodayStar: "on bg-[#26301c] text-[#ffc94a] font-bold",
+  tdServerNA: "px-3 py-3 text-center font-semibold display text-[#ff8a8a] bg-[#2a1518] border-b border-[#262a35]",
+  tdNA:       "px-3 py-3 text-center text-[#ff8a8a] font-semibold bg-[#1f1216] border-b border-[#262a35]"
 };
+
+// a server with this anchor date is treated as inactive / not available
+const NA_DATE = "0000-00-00";
 
 function todayInTZ(o) {
   const s = new Date(Date.now() + o * 3600000);
@@ -241,8 +378,20 @@ function render(data) {
   // rows — sorted numerically
   const servers = Object.keys(data).sort((a, b) => Number(a) - Number(b));
   servers.forEach((server, ri) => {
-    const anchor = parseDate(data[server]);
     const tr = document.createElement("tr");
+
+    // server marked unavailable — whole row shows N/A in red
+    if (data[server] === NA_DATE) {
+      let row = `<td class="${CLS.tdServerNA} text-left">${server}</td>`;
+      COLUMNS.forEach(() => {
+        row += `<td class="${CLS.tdNA}">N/A</td>`;
+      });
+      tr.innerHTML = row;
+      tbl.appendChild(tr);
+      return;
+    }
+
+    const anchor = parseDate(data[server]);
     let row = `<td class="${CLS.tdServer} text-left">${server}</td>`;
 
     COLUMNS.forEach((off, ci) => {
@@ -268,16 +417,96 @@ function render(data) {
 
 function renderFooter() {
   document.getElementById("year").textContent = new Date().getUTCFullYear();
-  document.getElementById("lastUpdated").textContent =
-    new Date().toLocaleString("en-US", {
-      timeZone: "Asia/Tokyo",
-      day: "2-digit", month: "short", year: "numeric",
-      hour: "2-digit", minute: "2-digit", hour12: false
-    }) + " (UTC+9)";
+}
+
+// === Today's Shiny — copyable announcement ===
+// joins a list as "#A, #B, and #C" (Oxford-style)
+function joinServers(list) {
+  if (list.length === 1) return list[0];
+  if (list.length === 2) return list[0] + " and " + list[1];
+  return list.slice(0, -1).join(", ") + ", and " + list[list.length - 1];
+}
+
+function renderShinyToday(data) {
+  const today = todayInTZ(TZ_OFFSET);
+  const el = document.getElementById("shinyText");
+  const btn = document.getElementById("shinyCopyBtn");
+
+  // servers with a star on today's date (skip N/A servers)
+  const active = Object.keys(data)
+    .filter(s => data[s] !== NA_DATE)
+    .filter(s => {
+      const diff = dayDiff(today, parseDate(data[s]));
+      return diff >= 0 && diff % CYCLE_DAYS === 0;
+    })
+    .sort((a, b) => Number(a) - Number(b));
+
+  let text;
+  if (active.length === 0) {
+    text = "No Shiny Task today!";
+  } else {
+    const tags = joinServers(active.map(s => "#" + s));
+    text = `Shiny Task today is on server ${tags}.`;
+  }
+  el.textContent = text;
+
+  btn.addEventListener("click", async () => {
+    const label = document.getElementById("shinyCopyLabel");
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      // fallback for older / non-secure contexts
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+    label.textContent = "Copied!";
+    btn.style.borderColor = "#36506b";
+    setTimeout(() => {
+      label.textContent = "Copy";
+      btn.style.borderColor = "";
+    }, 1600);
+  });
+}
+
+// === VP Guidance lightbox ===
+function initVpLightbox() {
+  const box = document.getElementById("vpLightbox");
+  const boxImg = document.getElementById("vpLightboxImg");
+  const closeBtn = document.getElementById("vpLightboxClose");
+
+  function open(src, alt) {
+    boxImg.src = src;
+    boxImg.alt = alt || "";
+    box.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function close() {
+    box.classList.remove("open");
+    document.body.style.overflow = "";
+    boxImg.src = "";
+  }
+
+  document.querySelectorAll(".vp-cell img").forEach(img => {
+    img.addEventListener("click", () => open(img.src, img.alt));
+  });
+  // click backdrop closes; clicking the image itself does not
+  box.addEventListener("click", e => { if (e.target !== boxImg) close(); });
+  closeBtn.addEventListener("click", close);
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && box.classList.contains("open")) close();
+  });
 }
 
 render(data);
 renderFooter();
+renderShinyToday(data);
+initVpLightbox();
 </script>
 </body>
 </html>
