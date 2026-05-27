@@ -325,7 +325,7 @@ const data = {
 };
 
 const CYCLE_DAYS = 3;
-const TZ_OFFSET = +2;
+const TZ_OFFSET = 2;
 const COLUMNS = [-1, 0, 1, 2, 3];
 
 const CLS = {
@@ -345,10 +345,17 @@ const CLS = {
 // a server with this anchor date is treated as inactive / not available
 const NA_DATE = "0000-00-00";
 
-function todayInTZ(o) {
-  const s = new Date(Date.now() + o * 3600000);
-  return new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth(), s.getUTCDate()));
+function todayInTZ(offsetHours) {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  const tzDate = new Date(utc + (offsetHours * 3600000));
+  return new Date(Date.UTC(
+    tzDate.getUTCFullYear(),
+    tzDate.getUTCMonth(),
+    tzDate.getUTCDate()
+  ));
 }
+
 function parseDate(str) {
   const [y, m, d] = str.split("-").map(Number);
   return new Date(Date.UTC(y, m - 1, d));
